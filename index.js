@@ -236,19 +236,29 @@ function getCityCoordinates() {
     });
 }
 
-// function getUserCoordinates(){
-//   navigator.geolocation.getCurrentPosition(position =>{
-//     let {latitude, longitude} = position.coords;
-//     // console.log(latitude, longitude)
-//     let REVERSE_GEOCODING_URL=`http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${api_key}`
+function getUserCoordinates(){
+  navigator.geolocation.getCurrentPosition(position =>{
+    let {latitude, longitude} = position.coords;
+    // console.log(latitude, longitude)
+    let REVERSE_GEOCODING_URL=`http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${api_key}`
 
-//     fetch(REVERSE_GEOCODING_URL).then(res => res.json()).then(data=>{
+    fetch(REVERSE_GEOCODING_URL).then(res => res.json()).then(data=>{
+       let{ name, country,state} = data[0];
+       getWeatherDetails(name, latitude, longitude, country, state)
+    }).catch(()=>{
+      alert("Failed to fetch user coordinates")
+    })
+  },
+  error=>{
+    if(error.code === error.PERMISSION_DENIED){
+      alert("Geolocation permission denied. Please reset location permission to grant access again")
+    }
+  }
 
-//     }).catch(()=>{
-//       alert
-//     })
-//   })
-// }
+)
+}
 
 searchBtn.addEventListener("click", getCityCoordinates);
-// locationBtn.addEventListener("click", getUserCoordinates)
+locationBtn.addEventListener("click", getUserCoordinates)
+cityInput.addEventListener('keyup', e=>e.key ==="Enter"&& getCityCoordinates())
+window.addEventListener("load", getCityCoordinates())
